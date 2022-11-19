@@ -2,25 +2,17 @@
 #include <ctype.h>
 #include <string.h>
 
-/*
-FILE *CriaArquivo(char s[200])
-{
-FILE *p;
-p = fopen(s, "wb");
-return(p);
-}
-*/
-
 typedef struct {
 char* user;
 char* password;
-} tUsuario, *tPtrUsuario;
+} tUsuario;
+
+void checagem_usuario(tUsuario algo,tUsuario *algo2, int *autorizar);
 
 int main()
 {
-    char quest_cadastro;
     tUsuario Usuario;
-    tPtrUsuario PtrUsuario;
+    char quest_cadastro;
 
     do
     {
@@ -33,15 +25,17 @@ int main()
 
     if (quest_cadastro == 'n')
     {
+        int *autorizar;
         FILE* cadastro;
 
         cadastro = fopen("login_usuario.txt","w");
 
         do{
         printf("\nDigite o seu Usuário: ");
-        scanf("%s", PtrUsuario->user);
-        printf("\n%s", PtrUsuario->user);
-        }while(PtrUsuario->user == "eu"); //Erro aqui
+        scanf("%s", &Usuario.user);
+        
+        checagem_usuario(Usuario,&Usuario, autorizar);
+        }while(*autorizar = 0); //Erro aqui
 
         fclose(cadastro);
     }
@@ -54,4 +48,16 @@ int main()
     printf("\nSaindo do Programa...");
 
     return 0;
+}
+
+void checagem_usuario(tUsuario algo,tUsuario *algo2, int *autorizar)
+{
+    algo.user = "paralelo";
+    algo2->user = algo.user;
+    *autorizar = 0;
+
+    if (algo.user == "paralelo")
+    {
+        *autorizar = 1;
+    }
 }
