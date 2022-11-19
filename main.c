@@ -25,7 +25,7 @@ int main()
 
     if (quest_cadastro == 'n')
     {
-        int *autorizar;
+        int autorizar = 0;
         FILE* cadastro;
 
         cadastro = fopen("login_usuario.txt","w");
@@ -34,8 +34,8 @@ int main()
         printf("\nDigite o seu Usuário: ");
         scanf("%s", &Usuario.user);
         
-        checagem_usuario(Usuario,&Usuario, autorizar);
-        }while(*autorizar = 0); //Erro aqui
+        checagem_usuario(Usuario,&Usuario, &autorizar);
+        }while(autorizar == 0); //Erro aqui
 
         fclose(cadastro);
     }
@@ -52,7 +52,7 @@ int main()
 
 void checagem_usuario(tUsuario algo,tUsuario *algo2, int *autorizar)
 {
-    algo.user = "paralelo";
+    algo.user = "parasdsdfelo";
     algo2->user = algo.user;
     *autorizar = 0;
 
