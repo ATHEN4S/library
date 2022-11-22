@@ -62,43 +62,38 @@ void checagem_usuario(tUsuario login,tUsuario *login2, int *autorizar)
  
     else
     {
-        // Here we have taken size of
-        // array 1024 you can modify it
         char buffer[1024];
- 
         int row = 0;
         int column = 0;
- 
-        while (fgets(buffer,1024, check_user))
+
+        char* value = strtok(buffer, ", ");
+        // Splitting the data
+        while (fgets(buffer,1024, check_user) && value != NULL)
         {
             column = 0;
             row++;
- 
-            // To avoid printing of column
-            // names in file can be changed
-            // according to need
-            printf("row: %d\n", row);
+
+            char* value = strtok(buffer, ", "); // Vai ser só o "user" do csv
+            printf("\nrow: %d\n", row);
+
             if (row == 1)
                 continue;
 
- 
-            // Splitting the data
-            char* value = strtok(buffer, ", "); // Vai ser só o "user" do csv
-
-            printf("login: %s\n", &login.user);
+            printf("login: %s\n", &login2->user);
             printf("value: %s\n", value);
-            if (login.user == value) // -------------> não ta identificando
+
+            if (login2->user == value) // -------------> não ta identificando
             {
-                printf("gfd\n");
+                printf("zzzzzzzzzzzzzzzzzzzzzz\n");
                 printf("\nO usuário já existe, tente novamente\n");
                 *autorizar = 0;
                 break;
             }
             else
-            {
-                printf("zzzzzzzzzzzzzzzzzzzzzz");
                 *autorizar = 1;
-            }
+            
+
+            value = strtok(NULL, ", ");
         }
     }
         // Close the file
@@ -117,16 +112,16 @@ void colocar_usuario(tUsuario usuario,tUsuario *tusuario)
         char buffer[1024];
         int column = 0;
 
-        char* value = strtok(buffer, ", ");
-        while (value != NULL) {
+        char* val = strtok(buffer, ", ");
+        while (val != NULL) {
             if (column == 0) {
-                value = usuario.user;
+                val = usuario.user;
             }
             // Column 2
             if (column == 1) {
-                value = usuario.password;
+                val = usuario.password;
             }
-            value = strtok(NULL, ", ");
+            val = strtok(NULL, ", ");
             column++;
         }
     }
