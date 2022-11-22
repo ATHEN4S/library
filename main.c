@@ -7,7 +7,7 @@ char* user;
 char* password;
 } tUsuario;
 
-void checagem_usuario(tUsuario login,tUsuario *login2, int *autorizar);
+void checagem_usuario(tUsuario login,tUsuario *pLogin, int *autorizar);
 void colocar_usuario(tUsuario usuario,tUsuario *tusuario);
 
 int main()
@@ -17,6 +17,7 @@ int main()
 
     do
     {
+        printf("\n       Bem vindo a Biblioteca Athenas !\n\n");
         printf("Digite se você já tem cadastro(s/n)\n");
         printf("     (Digite 1 para sair)\n");
         printf("------> ");
@@ -51,7 +52,7 @@ int main()
     return 0;
 }
 
-void checagem_usuario(tUsuario login,tUsuario *login2, int *autorizar)
+void checagem_usuario(tUsuario login,tUsuario *pLogin, int *autorizar)
 {
     FILE* check_user;
 
@@ -62,15 +63,12 @@ void checagem_usuario(tUsuario login,tUsuario *login2, int *autorizar)
  
     else
     {
-        char buffer[1024];
+        char buffer[2000];
         int row = 0;
-        int column = 0;
 
-        char* value = strtok(buffer, ", ");
         // Splitting the data
-        while (fgets(buffer,1024, check_user) && value != NULL)
+        while (fgets(buffer,2000, check_user))
         {
-            column = 0;
             row++;
 
             char* value = strtok(buffer, ", "); // Vai ser só o "user" do csv
@@ -79,12 +77,11 @@ void checagem_usuario(tUsuario login,tUsuario *login2, int *autorizar)
             if (row == 1)
                 continue;
 
-            printf("login: %s\n", &login2->user);
+            printf("login: %s\n", &pLogin->user);
             printf("value: %s\n", value);
 
-            if (login2->user == value) // -------------> não ta identificando
+            if(strcmp(value, pLogin->user) == 0) // -------------> não ta identificando
             {
-                printf("zzzzzzzzzzzzzzzzzzzzzz\n");
                 printf("\nO usuário já existe, tente novamente\n");
                 *autorizar = 0;
                 break;
@@ -92,8 +89,6 @@ void checagem_usuario(tUsuario login,tUsuario *login2, int *autorizar)
             else
                 *autorizar = 1;
             
-
-            value = strtok(NULL, ", ");
         }
     }
         // Close the file
@@ -105,6 +100,7 @@ void colocar_usuario(tUsuario usuario,tUsuario *tusuario)
 {
     FILE* user_in_txt;
     user_in_txt = fopen("login_usuario.txt","a");
+
     if (!user_in_txt)
         printf("Can't open file\n");
 
