@@ -41,10 +41,15 @@ int main()
         checagem_usuario(Usuario,&Usuario, &autorizar);
         }while(autorizar == 0);
 
+        Usuario.password = calloc(30, sizeof(char*));
+        do{
         printf("\nDigite a sua senha: ");
         scanf(" %s", Usuario.password);
-
+        }while(strlen(Usuario.password) > 20);
         colocar_usuario(Usuario,&Usuario);
+
+        free(Usuario.password);
+        free(Usuario.user);
     }
 
     else if (quest_cadastro == 's')
@@ -90,7 +95,6 @@ int checagem_usuario(const tUsuario login, const tUsuario *pLogin, int *autoriza
 
             if (strcmp(pLogin->user, value) == 0) // -------------> não ta identificando
             {
-                printf("zzzzzzzzzzzzzzzzzzzzzz\n");
                 printf("\nO usuário já existe, tente novamente\n");
                 *autorizar = 0;
                 break;
@@ -106,30 +110,30 @@ int checagem_usuario(const tUsuario login, const tUsuario *pLogin, int *autoriza
 }
 
 
-void colocar_usuario(tUsuario usuario,tUsuario *tusuario)
+void colocar_usuario(tUsuario usuario, tUsuario *tusuario)
 {
-    FILE* user_in_txt;
-    user_in_txt = fopen("login_usuario.txt","a");
+    FILE* user_in_txt_a;
+    FILE* user_in_txt_r;
+    user_in_txt_a = fopen("login_usuario.txt","a");
+    user_in_txt_r = fopen("login_usuario.txt","r");
 
-    if (!user_in_txt)
+    if (!user_in_txt_r)
         printf("Can't open file\n");
 
-    else{
-        char buffer[1024];
+    else
+    {
+        char buffer[50];
         int column = 0;
+        char* comma = ", ";
+        char destination[50] = "";
 
-        char* val = strtok(buffer, ", ");
-        while (val != NULL) {
-            if (column == 0) {
-                val = usuario.user;
-            }
-            // Column 2
-            if (column == 1) {
-                val = usuario.password;
-            }
-            val = strtok(NULL, ", ");
-            column++;
-        }
+        strcat(destination, tusuario->user);
+        strcat(destination,comma);
+        strcat(destination, tusuario->password);
+        printf("\ndest: %s", destination);
+        
+        fprintf(user_in_txt_a, "\n%s", destination, buffer);
     }
-    fclose(user_in_txt);
+    fclose(user_in_txt_a);
+    fclose(user_in_txt_r);
 }
