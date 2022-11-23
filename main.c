@@ -1,13 +1,17 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 
-typedef struct {
+typedef struct pessoa{
 char* user;
 char* password;
+struct pessoa * next;
 } tUsuario;
 
-void checagem_usuario(tUsuario login,tUsuario *pLogin, int *autorizar);
+
+
+int checagem_usuario(const tUsuario login, const tUsuario *pLogin, int *autorizar);
 void colocar_usuario(tUsuario usuario,tUsuario *tusuario);
 
 int main()
@@ -30,14 +34,15 @@ int main()
         int autorizar = 0;
 
         do{
+            Usuario.user = calloc(30, sizeof(char*));
         printf("\nDigite o seu Usuário: ");
-        scanf("%s", &Usuario.user);
+        scanf(" %s", Usuario.user);
         
         checagem_usuario(Usuario,&Usuario, &autorizar);
         }while(autorizar == 0);
 
         printf("\nDigite a sua senha: ");
-        scanf("%s", &Usuario.password);
+        scanf(" %s", Usuario.password);
 
         colocar_usuario(Usuario,&Usuario);
     }
@@ -52,22 +57,25 @@ int main()
     return 0;
 }
 
-void checagem_usuario(tUsuario login,tUsuario *pLogin, int *autorizar)
+int checagem_usuario(const tUsuario login, const tUsuario *pLogin, int *autorizar)
 {
     FILE* check_user;
 
     check_user = fopen("login_usuario.txt","r");
 
     if (!check_user)
+    {
         printf("Can't open file\n");
- 
+        return 1;
+    }
+    
     else
     {
-        char buffer[2000];
+        char buffer[100];
         int row = 0;
 
         // Splitting the data
-        while (fgets(buffer,2000, check_user))
+        while (fgets(buffer,100, check_user))
         {
             row++;
 
@@ -77,11 +85,12 @@ void checagem_usuario(tUsuario login,tUsuario *pLogin, int *autorizar)
             if (row == 1)
                 continue;
 
-            printf("login: %s\n", &pLogin->user);
+            printf("login: %s\n", pLogin->user);
             printf("value: %s\n", value);
 
-            if(strcmp(value, pLogin->user) == 0) // -------------> não ta identificando
+            if (strcmp(pLogin->user, value) == 0) // -------------> não ta identificando
             {
+                printf("zzzzzzzzzzzzzzzzzzzzzz\n");
                 printf("\nO usuário já existe, tente novamente\n");
                 *autorizar = 0;
                 break;
@@ -93,6 +102,7 @@ void checagem_usuario(tUsuario login,tUsuario *pLogin, int *autorizar)
     }
         // Close the file
         fclose(check_user);
+        return 0;
 }
 
 
