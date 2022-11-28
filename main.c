@@ -12,9 +12,9 @@ struct pessoa * next;
 
 
 int checagem_usuario(const tUsuario login, const tUsuario *pLogin, int *autorizar);
-void colocar_usuario(tUsuario usuario,tUsuario *tusuario);
+int colocar_usuario(tUsuario usuario,tUsuario *tusuario);
 
-int login(const tUsuario user, const tUsuario password, const tUsuario *pUser,  const tUsuario *pPassw);
+int login(tUsuario user, tUsuario *pUser, int *autorizar_login);
 
 int main()
 {
@@ -38,16 +38,16 @@ int main()
 
         do{
             Usuario.user = calloc(30, sizeof(char*));
-        printf("\nDigite o seu Usuário: ");
-        scanf(" %s", Usuario.user);
-        
-        checagem_usuario(Usuario,&Usuario, &autorizar);
-        }while(autorizar == 0);
+            printf("\nDigite o seu Usuário: ");
+            scanf(" %s", Usuario.user);
+            
+            checagem_usuario(Usuario,&Usuario, &autorizar);
+        }while(autorizar == 0 || strlen(Usuario.user) > 20);
 
         Usuario.password = calloc(30, sizeof(char*));
         do{
-        printf("\nDigite a sua senha: ");
-        scanf(" %s", Usuario.password);
+            printf("\nDigite a sua senha: ");
+            scanf(" %s", Usuario.password);
         }while(strlen(Usuario.password) > 20);
         colocar_usuario(Usuario,&Usuario);
 
@@ -57,23 +57,30 @@ int main()
 
     else if (quest_cadastro == 's')
     {
-
-        printf("sim");
-
         int result = 0;
-          
+        int autorizar_login = 0;
+
         Usuario.user = calloc(30, sizeof(char*));
         printf("\n Usuário: ");
         scanf(" %s", Usuario.user);
 
-        Usuario.password = calloc(20, sizeof(char*));
+        Usuario.password = calloc(30, sizeof(char*));
         printf("\n Senha: ");
         scanf(" %s", Usuario.password);
 
-        result = login(Usuario, Senha, &Usuario, &Senha);
+        login(Usuario, &Usuario, &autorizar_login);
 
         free(Usuario.password);
         free(Usuario.user);
+
+        if (autorizar_login == 1)
+        {
+            printf("Continuando programa...");
+        }
+        else
+        {
+            printf("O programa não pôde ser continuado");
+        }
     }
 
     printf("\nSaindo do Programa...");
@@ -113,7 +120,6 @@ int checagem_usuario(const tUsuario login, const tUsuario *pLogin, int *autoriza
             printf("value: %s\n", value);
 
             if (strcmp(pLogin->user, value) == 0) 
-
             {
                 printf("\nO usuário já existe, tente novamente\n");
                 *autorizar = 0;
@@ -130,7 +136,7 @@ int checagem_usuario(const tUsuario login, const tUsuario *pLogin, int *autoriza
 }
 
 
-void colocar_usuario(tUsuario usuario, tUsuario *tusuario)
+int colocar_usuario(tUsuario usuario, tUsuario *tusuario)
 {
     FILE* user_in_txt_a;
     FILE* user_in_txt_r;
@@ -138,7 +144,10 @@ void colocar_usuario(tUsuario usuario, tUsuario *tusuario)
     user_in_txt_r = fopen("login_usuario.txt","r");
 
     if (!user_in_txt_r)
+    {
         printf("Can't open file\n");
+        return 1;
+    }
 
     else
     {
@@ -156,41 +165,47 @@ void colocar_usuario(tUsuario usuario, tUsuario *tusuario)
     }
     fclose(user_in_txt_a);
     fclose(user_in_txt_r);
+
+    return 0;
 }
 
 
-int login(const tUsuario user, const tUsuario password, const tUsuario *pUser,  const tUsuario *pPassw)
+int login(tUsuario user, tUsuario *pUser, int *autorizar_login)
 {
-  FILE* login_txt_r;
-  login_txt_r = fopen("login_usuario.txt","r");
-  int find = 0;
+    FILE* login_txt_r;
+    login_txt_r = fopen("login_usuario.txt","r");
 
-  if (!login_txt_r){
-        printf("Can't open file\n");}
+    if (!login_txt_r)
+    {
+        printf("Can't open file\n");
+        return 1;
+    }
 
-  else{
-    char buffer[100];
-    char buffer2[100];
-    int line_u = 0, col = 0;
+    else
+    {
+        char buffer[100];
+        char buffer2[100];
+        int line_u = 0, col = 0;
 
-    while (fgets(buffer, sizeof(buffer), login_txt_r))
+        while (fgets(buffer, sizeof(buffer), login_txt_r)) // Vai rodar as linhas
         { 
             col=0;
-            find = 0;
+            int find = 0;
+            line_u++;
 
             char* user1 = strtok(buffer, ", ");
             
             while(user1 != NULL)
             {
                 col++;
-                line_u++;
+                
                 printf("\nline: %d\n", line_u);
-                printf("\ncol: %d\n", col);
-                printf("\nusuario: %s\n", user1);
+                printf("col: %d\n", col);
+                printf("usuario: %s\n", user1);
 
                 if(line_u == 1)
                 {
-                    user1 = NULL;
+                    user1 = NULL; // Para não rodar a mesma linha novamente
                     continue;
                 }
 
@@ -199,28 +214,36 @@ int login(const tUsuario user, const tUsuario password, const tUsuario *pUser,  
                     printf("login: %s\n", pUser->user);
                     printf("usuario_col = 1: %s\n", user1);
 
-                    if (strcmp(pUser->user, user1) == 0)
+                    if (strcmp(pUser->user, user1) == 0) // Se o usuário existe...
                     {
-                        find = find+1;
+                        find++;
                         printf("\nfind=%d\n", find);
                     }
                 }
+
                 if(col == 2)
                 {
-                    printf("usuario_col = 2: %s\n", user1);
-                    if (strcmp(pPassw->password, user1) == 0 && find == 1)
+                    printf("finda=%d\n", find);
+                    printf("password:%s\n", pUser->password);
+                    printf("usuario_col=2:%s\n", user1);
+                    if (strcmp(pUser->password, user1) == 0) // NÃO TA PEGANDO ESSA PARTE <<-------
                     {
-                        printf("zzzzzzzzzzzz");
-                        return 1;
-                    }
-                    else
-                    {
-                        printf("xxxxxxxxxx");
-                        //return 3;
+                        if (find == 1) // Se o usuário também existe nesta mesma linha
+                        {
+                            printf("Senha corresponde ao usuário\n");
+                            *autorizar_login = 1;
+                            return 0;
+                        }
+                        else
+                        {
+                            printf("Senha não corresponde ao usuário\n");
+                            *autorizar_login = 0;
+                            return 1;
+                        }
                     }
                 }
 
-                user1 = strtok(NULL, ", ");
+                user1 = strtok(NULL, ", "); //Para ter uma mudança de coluna com a ajuda do while != NULL
             }
         }
     }
