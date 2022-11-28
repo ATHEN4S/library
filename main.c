@@ -14,6 +14,7 @@ int checagem_usuario(const tUsuario login, const tUsuario *pLogin, int *autoriza
 int colocar_usuario(tUsuario usuario,tUsuario *tusuario);
 int login(const tUsuario user, const tUsuario *pUser);
 
+
 int main()
 {
     tUsuario Usuario, Senha;
@@ -81,6 +82,7 @@ int main()
         else if (result == -1)
             printf("Falha ao abrir arquivo\n");
             
+
         else
           printf("\n As informações dadas não batem com uma conta em nosso sistema... Confira seus dados e tente novamente! \n");
     }
