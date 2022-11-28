@@ -13,10 +13,12 @@ struct pessoa * next;
 
 int checagem_usuario(const tUsuario login, const tUsuario *pLogin, int *autorizar);
 void colocar_usuario(tUsuario usuario,tUsuario *tusuario);
+int login(const tUsuario user, const tUsuario password, const tUsuario *pUser,  const tUsuario *pPassw);
 
 int main()
 {
-    tUsuario Usuario;
+    tUsuario Usuario, Senha;
+    
     char quest_cadastro;
 
     do
@@ -28,6 +30,11 @@ int main()
         scanf(" %c", &quest_cadastro);
         quest_cadastro = tolower(quest_cadastro);
     }while(quest_cadastro != 's' && quest_cadastro != 'n' && quest_cadastro != '1');
+
+    if(quest_cadastro == '1'){
+      printf("\n Você saiu da Biblioteca. Até a próxima!");
+      return 0;
+    }
 
     if (quest_cadastro == 'n')
     {
@@ -54,10 +61,28 @@ int main()
 
     else if (quest_cadastro == 's')
     {
-        printf("sim");
+        int result = 0;
+          
+        Usuario.user = calloc(30, sizeof(char*));
+        printf("\n Usuário: ");
+        scanf(" %s", Usuario.user);
+
+        Usuario.password = calloc(20, sizeof(char*));
+        printf("\n Senha: ");
+        scanf(" %s", Usuario.password);
+        printf("%s", Usuario.password);
+
+        result = login(Usuario, Usuario, &Usuario, &Usuario);
+
+        if (result == 1){
+          printf("Login realizado com sucesso! \n");
+        }
+
+        else
+          printf("\n As informações dadas não batem com uma conta em nosso sistema... Confira seus dados e tente novamente! \n");
     }
 
-    printf("\nSaindo do Programa...");
+    printf("Saindo do Programa...");
 
     return 0;
 }
@@ -93,7 +118,7 @@ int checagem_usuario(const tUsuario login, const tUsuario *pLogin, int *autoriza
             printf("login: %s\n", pLogin->user);
             printf("value: %s\n", value);
 
-            if (strcmp(pLogin->user, value) == 0) // -------------> não ta identificando
+            if (strcmp(pLogin->user, value) == 0) 
             {
                 printf("\nO usuário já existe, tente novamente\n");
                 *autorizar = 0;
@@ -137,3 +162,41 @@ void colocar_usuario(tUsuario usuario, tUsuario *tusuario)
     fclose(user_in_txt_a);
     fclose(user_in_txt_r);
 }
+
+
+int login(const tUsuario user, const tUsuario password, const tUsuario *pUser,  const tUsuario *pPassw)
+{
+  FILE* login_txt_r;
+  login_txt_r = fopen("login_usuario.txt","r");
+  int find = 0;
+
+  if (!login_txt_r){
+        printf("Can't open file\n");}
+  else{
+    char buffer[100];
+    int line = 0;
+    while (fgets(buffer, sizeof(buffer), login_txt_r))
+        { 
+          line++;
+          char* user1 = strtok(buffer, ", ");
+          char* senha1 = strtok(NULL, ", ");
+          printf("\n line: %d\n", line);
+
+          printf("login u: %s\n", pUser->user);
+          printf("login s: %s\n", pPassw->password);
+          printf("usuario: %s\n", user1);
+          printf("senha: %s\n", senha1);
+          printf("%d", strcmp(pPassw->password, senha1));
+          
+
+        if (strcmp(pUser->user, user1) == 0){
+          if (strcmp(pPassw->password, senha1) == -10)
+            return 1;
+        } 
+
+        if (line == sizeof(buffer)){
+          return 0;
+          }
+    }
+  }
+  }
