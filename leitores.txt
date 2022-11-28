@@ -1,0 +1,4 @@
+user, status usuario, livros, devolver, lista de desejos
+malu, disponível, , , 
+ana, disponível, , , 
+frann, disponível, , , 

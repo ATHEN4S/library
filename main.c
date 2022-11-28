@@ -14,7 +14,6 @@ int checagem_usuario(const tUsuario login, const tUsuario *pLogin, int *autoriza
 int colocar_usuario(tUsuario usuario,tUsuario *tusuario);
 int login(const tUsuario user, const tUsuario *pUser);
 
-
 int main()
 {
     tUsuario Usuario, Senha;
@@ -74,8 +73,9 @@ int main()
 
         result = login(Usuario, &Usuario);
 
-        if (result == 1){
-          printf("\nLogin realizado com sucesso! \n");
+        if (result == 1)
+        {
+            printf("\nLogin realizado com sucesso! \n");
         }
 
         else if (result == -1)
@@ -143,10 +143,13 @@ int colocar_usuario(tUsuario usuario, tUsuario *tusuario)
 {
     FILE* user_in_txt_a;
     FILE* user_in_txt_r;
+    FILE* status;
+
     user_in_txt_a = fopen("login_usuario.txt","a");
     user_in_txt_r = fopen("login_usuario.txt","r");
+    status = fopen("leitores.txt", "a");
 
-    if (!user_in_txt_r)
+    if (!user_in_txt_r || !status)
     {
         printf("Can't open file\n");
         return 1;
@@ -161,12 +164,32 @@ int colocar_usuario(tUsuario usuario, tUsuario *tusuario)
         strcat(destination, tusuario->user);
         strcat(destination,comma);
         strcat(destination, tusuario->password);
-        printf("\ndest: %s", destination);
-        
         fprintf(user_in_txt_a, "\n%s", destination, buffer);
+
+        // Já para o status_user
+        char leitor[50] = "";
+        char* status_usuario = "disponivel";
+        char* livros = "";
+        char* devolver = "";
+        char* lista_desejos = "";
+
+        strcat(leitor, tusuario->user);
+        strcat(leitor,comma);
+        strcat(leitor, status_usuario);
+        strcat(leitor,comma);
+        strcat(leitor,livros);
+        strcat(leitor,comma);
+        strcat(leitor,devolver);
+        strcat(leitor,comma);
+        strcat(leitor,lista_desejos);
+
+        fprintf(status, "\n%s", leitor, buffer);
     }
+
+    printf("\nUsuário criado com sucesso !!\n");
     fclose(user_in_txt_a);
     fclose(user_in_txt_r);
+    fclose(status);
     return 0;
 }
 
@@ -200,10 +223,16 @@ int login(const tUsuario user, const tUsuario *pUser)
             strcat(pass,n);
 
             if ((strcmp(pUser->user, user1) == 0) && ((strcmp(pass, senha1) == 0) || (strcmp(pUser->password, senha1) == 0))) // Se usuario e senha se correspondem...
+            {
+                fclose(login_txt_r);
                 return 1;
+            }
 
             if (line == sizeof(buffer))
+            {
+                fclose(login_txt_r);
                 return 0;
+            }
         }
     }
 }
