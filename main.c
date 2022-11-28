@@ -71,7 +71,6 @@ int main()
         Usuario.password = calloc(20, sizeof(char*));
         printf("\n Senha: ");
         scanf(" %s", Usuario.password);
-        printf("%s", Usuario.password);
 
         result = login(Usuario, &Usuario);
 
