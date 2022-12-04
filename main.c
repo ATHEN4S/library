@@ -242,7 +242,8 @@ int login(const tUsuario user, const tUsuario *pUser)
 int books(void)
 {
     FILE* library;
-    library = fopen("books_treated","r");
+    int x;
+    library = fopen("books_treated.txt","r");
     int find = 0;
 
     if (!library)
@@ -250,32 +251,37 @@ int books(void)
         printf("Can't open file\n");
         return -1;
     }
-    else
+else
     {
-        char buffer[100];
-        int line = 0, col=0;
+        char buffer[1000];
+        int row = 0, col=0;
         while (fgets(buffer, sizeof(buffer), library))
         {
-            line++;
+            col = 0;
+            row++;
             char* pos = strtok(buffer, ",");
+            if (row == 1)
+            {
+                pos == NULL;
+                 continue;
+            }
 
             while(pos != NULL)
             {
-                printf("NOT NULL");
                 col++;
-                if (line == 1)
-                {
-                    pos == NULL;
-                    continue;
-                }
-
+                printf("\n\ncol: %d", col);
                 if(col == 1)
                 {
-                    printf("%d", pos);
+                    printf("\n%s", pos);
                 }
+
+                if (col == 2)
+                {
+                    printf("\n%s", pos);
+                }
+
                 pos = strtok(NULL, ",");
             }
         }
     }
-
 }
