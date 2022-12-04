@@ -251,7 +251,7 @@ int books(void)
         printf("Can't open file\n");
         return -1;
     }
-else
+    else
     {
         char buffer[1000];
         int row = 0, col=0;

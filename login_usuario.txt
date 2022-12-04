@@ -1,4 +1,0 @@
-user, password
-malu, 12345
-ana, 54321
-frann, 36435
