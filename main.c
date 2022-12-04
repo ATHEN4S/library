@@ -13,6 +13,7 @@ struct pessoa * next;
 int checagem_usuario(const tUsuario login, const tUsuario *pLogin, int *autorizar);
 int colocar_usuario(tUsuario usuario,tUsuario *tusuario);
 int login(const tUsuario user, const tUsuario *pUser);
+int books();
 
 int main()
 {
@@ -76,6 +77,7 @@ int main()
         if (result == 1)
         {
             printf("\nLogin realizado com sucesso! \n");
+            books();
         }
 
         else if (result == -1)
@@ -235,4 +237,45 @@ int login(const tUsuario user, const tUsuario *pUser)
             }
         }
     }
+}
+
+int books(void)
+{
+    FILE* library;
+    library = fopen("books_treated","r");
+    int find = 0;
+
+    if (!library)
+    {
+        printf("Can't open file\n");
+        return -1;
+    }
+    else
+    {
+        char buffer[100];
+        int line = 0, col=0;
+        while (fgets(buffer, sizeof(buffer), library))
+        {
+            line++;
+            char* pos = strtok(buffer, ",");
+
+            while(pos != NULL)
+            {
+                printf("NOT NULL");
+                col++;
+                if (line == 1)
+                {
+                    pos == NULL;
+                    continue;
+                }
+
+                if(col == 1)
+                {
+                    printf("%d", pos);
+                }
+                pos = strtok(NULL, ",");
+            }
+        }
+    }
+
 }
