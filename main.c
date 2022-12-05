@@ -77,7 +77,34 @@ int main()
         if (result == 1)
         {
             printf("\nLogin realizado com sucesso! \n");
-            books();
+
+            char opc;
+            do{
+                printf("\n Digite o que você quer fazer: ");
+                printf("\n  (a) Alugar Livro\n  (b) Ver data de devolução\n  (c) Adicionar Livro a lista de Desejos\n  (d) Dar nota ao livro\n  (e) Procurar Livro");
+                scanf(" %c", &opc);
+                opc = tolower(opc);
+            }while(opc != 'a' && opc != 'b' && opc != 'c' && opc != 'd' && opc != 'e');
+            if(opc == 'a')
+            {
+                books();
+            }
+            else if(opc == 'b')
+            {
+                printf("b");
+            }
+            else if(opc == 'c')
+            {
+                printf("c");
+            }
+            else if(opc == 'd')
+            {
+                printf("d");
+            }
+            if(opc == 'e')
+            {
+                printf("e");
+            }
         }
 
         else if (result == -1)
