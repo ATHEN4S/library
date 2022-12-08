@@ -3,6 +3,8 @@
 #include <ctype.h>
 #include <string.h>
 
+
+// Definindo um struct para armazenar os dados de login do usuário.
 typedef struct pessoa{
 char* user;
 char* password;
@@ -10,32 +12,38 @@ struct pessoa * next;
 } tUsuario;
 
 
+// Declarando as funções que irão ser utilizadas
 int checagem_usuario(const tUsuario login, const tUsuario *pLogin, int *autorizar);
 int colocar_usuario(tUsuario usuario,tUsuario *tusuario);
 int login(const tUsuario user, const tUsuario *pUser);
 int books();
 
+
+// Aqui roda o código principal.
 int main()
 {
     tUsuario Usuario, Senha;
-    
     char quest_cadastro;
 
     do
     {
+        // Menu inicial.
         printf("\n       Bem vindo a Biblioteca Athenas !\n\n");
         printf("Digite se você já tem cadastro(s/n)\n");
         printf("     (Digite 1 para sair)\n");
         printf("------> ");
         scanf(" %c", &quest_cadastro);
         quest_cadastro = tolower(quest_cadastro);
+        
     }while(quest_cadastro != 's' && quest_cadastro != 'n' && quest_cadastro != '1');
-
+    
+    // Caso a escolha seja de sair.
     if(quest_cadastro == '1'){
       printf("\n Você saiu da Biblioteca. Até a próxima!");
       return 0;
     }
 
+    // Para se cadastrar.
     if (quest_cadastro == 'n')
     {
         int autorizar = 0;
@@ -59,7 +67,8 @@ int main()
         free(Usuario.password);
         free(Usuario.user);
     }
-
+    
+    // Fazer o login.
     else if (quest_cadastro == 's')
     {
         int result = 0;
@@ -73,7 +82,8 @@ int main()
         scanf(" %s", Usuario.password);
 
         result = login(Usuario, &Usuario);
-
+        
+        // Login feito!
         if (result == 1)
         {
             printf("\nLogin realizado com sucesso! \n");
@@ -110,7 +120,7 @@ int main()
         else if (result == -1)
             printf("Falha ao abrir arquivo\n");
             
-
+        // Login deu errado:
         else
           printf("\n As informações dadas não batem com uma conta em nosso sistema... Confira seus dados e tente novamente! \n");
     }
@@ -120,6 +130,7 @@ int main()
     return 0;
 }
 
+// Função para ver se o nome do usuário está disponível ou se já tem um usuário com esse nome.
 int checagem_usuario(const tUsuario login, const tUsuario *pLogin, int *autorizar)
 {
     FILE* check_user;
@@ -162,12 +173,13 @@ int checagem_usuario(const tUsuario login, const tUsuario *pLogin, int *autoriza
             
         }
     }
-        // Close the file
+        // Fecha o arquivo.
         fclose(check_user);
         return 0;
 }
 
 
+// Funcão que realiza o cadastro do novo usuário, e armazena no txt.
 int colocar_usuario(tUsuario usuario, tUsuario *tusuario)
 {
     FILE* user_in_txt_a;
@@ -180,7 +192,7 @@ int colocar_usuario(tUsuario usuario, tUsuario *tusuario)
 
     if (!user_in_txt_r || !status)
     {
-        printf("Can't open file\n");
+        printf("Falha ao abrir arquivo\n");
         return 1;
     }
     else
@@ -223,6 +235,7 @@ int colocar_usuario(tUsuario usuario, tUsuario *tusuario)
 }
 
 
+// Função que realiza o login.
 int login(const tUsuario user, const tUsuario *pUser)
 {
     FILE* login_txt_r;
@@ -231,7 +244,8 @@ int login(const tUsuario user, const tUsuario *pUser)
 
     if (!login_txt_r)
     {
-        printf("Can't open file\n");
+        // Caso o arquivo não abra
+        printf("Falha ao abrir arquivo\n");
         return -1;
     }
     else
@@ -250,7 +264,8 @@ int login(const tUsuario user, const tUsuario *pUser)
 
             strcat(pass, pUser->password);
             strcat(pass,n);
-
+            
+            // Checando se o usuario e a senha estão corretos.
             if ((strcmp(pUser->user, user1) == 0) && ((strcmp(pass, senha1) == 0) || (strcmp(pUser->password, senha1) == 0))) // Se usuario e senha se correspondem...
             {
                 fclose(login_txt_r);
@@ -265,6 +280,8 @@ int login(const tUsuario user, const tUsuario *pUser)
         }
     }
 }
+
+// Menu secundário, depois de efetuado o login.
 
 int books(void)
 {
