@@ -1,4 +1,4 @@
- #include <ctype.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -491,31 +491,3 @@ void mudarDIS(char *disp, int line) {
   remove("livros.txt");
   rename("target.txt","livros.txt");
 }
-
-/*
-    while (fgets(buffer, sizeof(buffer), fp)) {
-        count++;
-        row++;
-        col=0;
-        char *disponibilidade = strtok(buffer, ",");
-        while(disponibilidade != NULL)
-        {
-          if(col==line)
-          {
-            strcpy(s, disponibilidade); 
-            s[strlen(s) - 1] = '\0';
-            strcat(s, t);
-            s[strlen(s)] = '\n';
-            fflush(stdin);
-            fprintf(fv,"%s", s); 
-           
-            edited=1;
-          }
-        else fprintf(fv,"%s", buffer);
-        disponibilidade = strtok(NULL, ",");
-        col++
-      }
-    }
-*/
-
- 
