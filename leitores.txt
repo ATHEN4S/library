@@ -1,4 +1,4 @@
-user, status usuario, livros, data_devolução, algo
+user, status usuario, livros, data_devolução, fim
 ,malu, disponível, , , 
 ,anna, disponível, , , 
 ,frann, disponível, , , 
