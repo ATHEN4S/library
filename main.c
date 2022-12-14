@@ -29,9 +29,9 @@ int adiciona_date(int dia, int mes, int ano, tUsuario *pUser, tLivro *plivro);
 int checagemdvvr(const tUsuario user, const tUsuario *pUser);
 int mudarDIS(char *nome_livro);
 int remove_devol(tUsuario *pUser);
+void copiar(FILE *ent, FILE *saida);
 //Data de entrega
 int print_data(tUsuario *pUser);
-void copiar(FILE *ent, FILE *saida);
 
 int main() {
   tUsuario Usuario, Senha;
