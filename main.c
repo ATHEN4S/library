@@ -22,8 +22,8 @@ int checagemdois(const tLivro livro, const tLivro *plivro);
 int checagem_usuario(const tUsuario login, const tUsuario *pLogin, int *autorizar);
 int colocar_usuario(tUsuario usuario, tUsuario *tusuario);
 int login(const tUsuario user, const tUsuario *pUser);
-void mudarIND(char *frase, int line);
-void mudarDIS(char *disp, int line);
+int mudarIND(char *frase, int line);
+int mudarDIS(char *disp, int line);
 int adiciona_date(int dia, int mes, int ano, tUsuario *pUser, tLivro *plivro);
 int remove_devol(tUsuario *pUser);
 int print_data(tUsuario *pUser);
@@ -456,7 +456,7 @@ int checagemdois(const tLivro livro, const tLivro *plivro) {
   return 0;
 }//MUDAR PARA DISPONIVEL, DEVOLVER
       
-void mudarIND(char *frase, int line) { //MUDAR PARA INDISPONIVEL, PEGAR EMPRESTADO
+int mudarIND(char *frase, int line) { //MUDAR PARA INDISPONIVEL, PEGAR EMPRESTADO
   
     FILE *fp;
     FILE *fv;
@@ -475,6 +475,7 @@ void mudarIND(char *frase, int line) { //MUDAR PARA INDISPONIVEL, PEGAR EMPRESTA
   
     if(fp==NULL||fv==NULL){
         printf("\nErro... Não foi possível abrir os arquivos");
+        return 1;
     }
 
     while (fgets(buffer, sizeof(buffer), fp)) {
@@ -504,16 +505,16 @@ void mudarIND(char *frase, int line) { //MUDAR PARA INDISPONIVEL, PEGAR EMPRESTA
     else
         printf("\nLinha não encontrada.");
 
-
-  printf("\nCHEGOU AQUI");
-  free(s);
-  remove("livros.txt");
-  rename("target.txt","livros.txt");
   fclose(fp);
   fclose(fv);
+  free(s);
+
+  remove("livros.txt");
+  rename("target.txt","livros.txt");
+  return 0;
 }
 
-void mudarDIS(char *disp, int line) {
+int mudarDIS(char *disp, int line) {
   
     FILE *fp;
     FILE *fv;
@@ -533,6 +534,7 @@ void mudarDIS(char *disp, int line) {
   
     if(fp==NULL||fv==NULL){
         printf("\nErro... Não foi possível abrir os arquivos");
+        return 1;
     }
 
     while (fgets(buffer, sizeof(buffer), fp)) {
@@ -564,6 +566,7 @@ void mudarDIS(char *disp, int line) {
   free(s);
   remove("livros.txt");
   rename("target.txt","livros.txt");
+  return 0;
 }
 
 int adiciona_date(int dia,int mes,int ano, tUsuario *pUser, tLivro *plivro)
