@@ -413,8 +413,8 @@ int checagem_livro(tLivro livro, tLivro *plivro, tUsuario *pUser)
 
       if (col == 4) {
         if (marcador == 1) {
-          
-          if (strcmp(livroprocurado, "/DISPONIVEL") >= 10)
+
+          if (strcmp(livroprocurado, "/DISPONIVEL\n") == 0 || strcmp(livroprocurado, "/DISPONIVEL") == 0)
           {
             printf("\n Informações: %s",frase);
             
@@ -462,16 +462,16 @@ int checagem_livro(tLivro livro, tLivro *plivro, tUsuario *pUser)
               ano = data_hora_atual->tm_year;
               
             adiciona_date(d, m, ano, pUser, plivro);
-              
             }
         }
 
-      else{
+      else
+      {
         printf("Esse livro já foi emprestado. Escolha outro, ou tente novamente mais tarde.");
-          break;
-          }
+        break;
+      }
 
-        }
+    }
         
         break;
       }
