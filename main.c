@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <locale.h>
 
 typedef struct pessoa {
   char *user;
@@ -28,7 +29,10 @@ int adiciona_date(int dia, int mes, int ano, tUsuario *pUser, tLivro *plivro);
 int remove_devol(tUsuario *pUser);
 int print_data(tUsuario *pUser);
 
-int main() {
+int main()
+{
+  setlocale(LC_ALL, "Portuguese_Brazil");
+
   tUsuario Usuario, Senha;
   tLivro Book;
   char quest_cadastro;
@@ -36,7 +40,7 @@ int main() {
 
   do {
     printf("\n       Bem vindo a Biblioteca Athenas!\n\n");
-    printf("Digite se vocÃª jÃ¡ tem cadastro(s/n)\n");
+    printf("Digite se você já tem cadastro(s/n)\n");
     printf("     (Digite 1 para sair)\n");
     printf(" ------> ");
     scanf(" %c", &quest_cadastro);
@@ -45,7 +49,7 @@ int main() {
            quest_cadastro != '1');
 
   if (quest_cadastro == '1') {
-    printf("\n VocÃª saiu da Biblioteca. AtÃ© a prÃ³xima!");
+    printf("\n Você saiu da Biblioteca. Até a próxima!");
     return 0;
   }
 
@@ -54,7 +58,7 @@ int main() {
 
     do {
       Usuario.user = calloc(30, sizeof(char *));
-      printf("\nDigite o seu UsuÃ¡rio: ");
+      printf("\nDigite o seu Usuário: ");
       scanf(" %s", Usuario.user);
 
       checagem_usuario(Usuario, &Usuario, &autorizar);
@@ -76,7 +80,7 @@ int main() {
     int result = 0;
 
     Usuario.user = calloc(30, sizeof(char *));
-    printf("\n UsuÃ¡rio: ");
+    printf("\n Usuário: ");
     scanf(" %s", Usuario.user);
 
     Usuario.password = calloc(20, sizeof(char *));
@@ -91,7 +95,7 @@ int main() {
 
       printf("\n \n Bem vindo, %s! \n", Usuario.user);
       printf("\n\n O que deseja fazer hoje?\n a) Pegar um livro. \n b) Devolver "
-             "um livro. \n c) Conferir data de devoluÃ§Ã£o. \n s) Sair \n");
+             "um livro. \n c) Conferir data de devolução. \n s) Sair \n");
       printf("\n ------> ");
       scanf(" %c", &pegar_devolver);
 
@@ -101,8 +105,8 @@ int main() {
       case 'a':
 
         Book.livros = calloc(200, sizeof(char*));
-        printf("\n\n Digite o tÃ­tulo da obra:");
-        printf("\n (Informe o tÃ­tulo entre aspas)");
+        printf("\n\n Digite o título da obra:");
+        printf("\n (Informe o título entre aspas)");
         printf("\n ------> ");
         scanf(" %[^\n]", Book.livros);
         printf("\n --> Livro Digitado:  %s", Book.livros);
@@ -112,11 +116,11 @@ int main() {
         
 
       case 'b':
-        printf("\n DEVOLUÃ‡ÃƒO \n \n");
+        printf("\n DEVOLUÇÃO \n \n");
         
         Book.livros = calloc(200, sizeof(char*));
-        printf("\n\n Digite o tÃ­tulo da obra que deseja devolver:");
-        printf("\n (Informe o tÃ­tulo entre aspas)");
+        printf("\n\n Digite o título da obra que deseja devolver:");
+        printf("\n (Informe o título entre aspas)");
         printf("\n ------> ");
         scanf(" %[^\n]", Book.livros);
         printf("\n --> Livro Digitado:  %s", Book.livros);
@@ -127,7 +131,7 @@ int main() {
         break;
 
       case 'c':
-        printf("\n DATA DE DEVOLUÃ‡ÃƒO \n \n");
+        printf("\n DATA DE DEVOLUÇÃO \n \n");
         print_data(&Usuario);
         break;
 
@@ -136,7 +140,7 @@ int main() {
         return 0;
 
       default:
-        printf("\n OPÃ‡ÃƒO INVÃLIDA\n \nEscolha uma das opÃ§Ãµes disponÃ­veis.");
+        printf("\n OPÇÃO INVÁLIDA\n \nEscolha uma das opções disponíveis.");
         voltar = 1;
         break;
 
@@ -151,7 +155,7 @@ int main() {
       printf("Falha ao abrir arquivo\n");
 
     else
-      printf("\n As informaÃ§Ãµes dadas nÃ£o batem com uma conta em nosso "
+      printf("\n As informações dadas não batem com uma conta em nosso "
              "sistema... Confira seus dados e tente novamente! \n");
   }
 
@@ -167,7 +171,7 @@ int checagem_usuario(const tUsuario login, const tUsuario *pLogin,
   check_user = fopen("login_usuario.txt", "r");
 
   if (!check_user) {
-    printf("NÃ£o pÃ´de abrir o arquivo\n");
+    printf("Não pôde abrir o arquivo\n");
     return 1;
   }
 
@@ -179,13 +183,13 @@ int checagem_usuario(const tUsuario login, const tUsuario *pLogin,
     while (fgets(buffer, 100, check_user)) {
       row++;
 
-      char *value = strtok(buffer, ", "); // Vai ser sÃ³ o "user" do csv
+      char *value = strtok(buffer, ", "); // Vai ser só o "user" do csv
 
       if (row == 1)
         continue;
 
       if (strcmp(pLogin->user, value) == 0) {
-        printf("\nO usuÃ¡rio jÃ¡ existe, tente novamente\n");
+        printf("\nO usuário já existe, tente novamente\n");
         *autorizar = 0;
         break;
       } else
@@ -207,7 +211,7 @@ int colocar_usuario(tUsuario usuario, tUsuario *tusuario) {
   status = fopen("leitores.txt", "a");
 
   if (!user_in_txt_r || !status) {
-    printf("NÃ£o foi possÃ­vel abrir o arquivo\n");
+    printf("Não foi possível abrir o arquivo\n");
     return 1;
   } else {
     char buffer[50];
@@ -220,7 +224,7 @@ int colocar_usuario(tUsuario usuario, tUsuario *tusuario) {
     strcat(destination, tusuario->password);
     fprintf(user_in_txt_a, "\n%s", destination, buffer);
 
-    // JÃ¡ para o status_user
+    // Já para o status_user
     char leitor[50] = "";
     char *status_usuario = "disponivel";
     char *livros = "";
@@ -240,7 +244,7 @@ int colocar_usuario(tUsuario usuario, tUsuario *tusuario) {
     fprintf(status, "\n%s", leitor, buffer);
   }
 
-  printf("\nUsuÃ¡rio criado com sucesso !!\n");
+  printf("\nUsuário criado com sucesso !!\n");
   fclose(user_in_txt_a);
   fclose(user_in_txt_r);
   fclose(status);
@@ -254,7 +258,7 @@ int login(const tUsuario user, const tUsuario *pUser) {
   tLivro Livro;
 
   if (!login_txt_r) {
-    printf("NÃ£o pÃ´de abrir arquivo\n");
+    printf("Não pôde abrir arquivo\n");
     return -1;
   } else {
     char buffer[100];
@@ -264,7 +268,7 @@ int login(const tUsuario user, const tUsuario *pUser) {
       char *user1 = strtok(buffer, ", ");
       char *senha1 = strtok(NULL, ", ");
 
-      // Usando concatenaÃ§Ã£o de string
+      // Usando concatenação de string
       char pass[30] = "";
       char *n = "\n";
 
@@ -353,10 +357,10 @@ int checagem_livro(const tLivro livro, tLivro *plivro, tUsuario *pUser) //MUDAR 
     
               
               printf("\nData de emprestimo:  %d/", data_hora_atual->tm_mday);
-              printf("%d/",data_hora_atual->tm_mon+1); //mÃªs
+              printf("%d/",data_hora_atual->tm_mon+1); //mês
               printf("%d\n\n",data_hora_atual->tm_year+1900); //ano
               
-              printf("\nData de devoluÃ§Ã£o:  %d/", data_hora_atual->tm_mday);
+              printf("\nData de devolução:  %d/", data_hora_atual->tm_mday);
               
               if((data_hora_atual->tm_mon+1)==12)
               {
@@ -385,7 +389,7 @@ int checagem_livro(const tLivro livro, tLivro *plivro, tUsuario *pUser) //MUDAR 
         }
 
       else{
-        printf("Esse livro jÃ¡ foi emprestado. Escolha outro, ou tente novamente mais tarde.");
+        printf("Esse livro já foi emprestado. Escolha outro, ou tente novamente mais tarde.");
           break;
           }
 
@@ -397,7 +401,7 @@ int checagem_livro(const tLivro livro, tLivro *plivro, tUsuario *pUser) //MUDAR 
   }
     
     if (marcador == (row-1)*2){
-      printf("\n \n NÃ£o achamos esse livro. Atente-se Ã s aspas e ao case das palavras! Verifique o tÃ­tulo e tente novamente.");
+      printf("\n \n Não achamos esse livro. Atente-se às aspas e ao case das palavras! Verifique o título e tente novamente.");
   }
   return 0;
 }
@@ -474,7 +478,7 @@ int mudarIND(char *frase, int line) { //MUDAR PARA INDISPONIVEL, PEGAR EMPRESTAD
     
   
     if(fp==NULL||fv==NULL){
-        printf("\nErro... NÃ£o foi possÃ­vel abrir os arquivos");
+        printf("\nErro... Não foi possível abrir os arquivos");
         return 1;
     }
 
@@ -503,7 +507,7 @@ int mudarIND(char *frase, int line) { //MUDAR PARA INDISPONIVEL, PEGAR EMPRESTAD
     if(edited==1)
         printf("\nLivro emprestado com sucesso ! Boa leitura.");
     else
-        printf("\nLinha nÃ£o encontrada.");
+        printf("\nLinha não encontrada.");
 
   fclose(fp);
   fclose(fv);
@@ -533,7 +537,7 @@ int mudarDIS(char *disp, int line) {
     
   
     if(fp==NULL||fv==NULL){
-        printf("\nErro... NÃ£o foi possÃ­vel abrir os arquivos");
+        printf("\nErro... Não foi possível abrir os arquivos");
         return 1;
     }
 
@@ -561,7 +565,7 @@ int mudarDIS(char *disp, int line) {
     if(edited==1)
         printf("\n\n Livro devolvido com sucesso!");
     else
-        printf("\nLinha nÃ£o encontrada.");
+        printf("\nLinha não encontrada.");
 
   free(s);
   remove("livros.txt");
@@ -587,7 +591,7 @@ int adiciona_date(int dia,int mes,int ano, tUsuario *pUser, tLivro *plivro)
   
   if(!data_r || !temp)
   {
-    printf("\nNÃ£o foi possÃ­vel abrir o arquivo");
+    printf("\nNão foi possível abrir o arquivo");
     return 1;
   }
   else
@@ -597,7 +601,7 @@ int adiciona_date(int dia,int mes,int ano, tUsuario *pUser, tLivro *plivro)
       col = 0;
       char *data = strtok(buffer, ",");
       char *comma = ",";
-      char *status = " indisponÃ­vel";
+      char *status = " indisponível";
       
       while(data != NULL)
       {
@@ -653,7 +657,7 @@ int remove_devol(tUsuario *pUser)
   int aut = 0;
   char buffer[1000];
   int col = 0;
-  char *status = " disponÃ­vel";
+  char *status = " disponível";
 
 
   data_r = fopen("leitores.txt","r");
@@ -661,7 +665,7 @@ int remove_devol(tUsuario *pUser)
   
   if(!data_r || !temp)
   {
-    printf("\nNÃ£o foi possÃ­vel abrir o arquivo");
+    printf("\nNão foi possível abrir o arquivo");
     return 1;
   }
   else
@@ -731,7 +735,7 @@ int print_data(tUsuario *pUser)
   
   if(!data_r)
   {
-    printf("\nNÃ£o foi possÃ­vel abrir o arquivo");
+    printf("\nNão foi possível abrir o arquivo");
     return 1;
   }
   else
@@ -756,12 +760,12 @@ int print_data(tUsuario *pUser)
         {
           if(data == NULL || data == " " || data == "")
           {
-            printf("\n -> NÃ£o existe data de devoluÃ§Ã£o\n");
+            printf("\n -> Não existe data de devolução\n");
           }
 
           else
           {
-            printf("\nData de DevoluÃ§Ã£o: %s\n", data);
+            printf("\nData de Devolução: %s\n", data);
           }
           aut = 0;
           
