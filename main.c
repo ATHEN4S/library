@@ -580,37 +580,39 @@ void mudarIND(char *frase, int line) { //MUDAR PARA INDISPONIVEL NO LIVROS, PEGA
     if(fp==NULL||fv==NULL){
         printf("\nErro... Não foi possível abrir os arquivos");
     }
-
-    while (fgets(buffer, sizeof(buffer), fp)) {
-        count++;
-        
-       if(count==line){
-            char *disponibilidade = strtok(buffer, "/");
-            
-            strcpy(s, disponibilidade); 
-            s[strlen(s) - 1] = '\0';
-            strcat(s, mudar);
-            s[strlen(s)] = '\n';
-            fflush(stdin);
-            fprintf(fv,"%s", s);   
-      
-            edited=1;
-           }
-         
-       else fprintf(fv,"%s", buffer);
-    }
-      
-    fclose(fp);
-    fclose(fv);
-
-    if(edited==1)
-        printf("\nLivro emprestado com sucesso ! Boa leitura.");
     else
-        printf("\nLinha não encontrada.");
+    {
+      while (fgets(buffer, sizeof(buffer), fp)) {
+          count++;
 
-  free(s);
-  remove("livros.txt");
-  rename("target.txt","livros.txt");
+         if(count==line){
+              char *disponibilidade = strtok(buffer, "/");
+
+              strcpy(s, disponibilidade); 
+              s[strlen(s) - 1] = '\0';
+              strcat(s, mudar);
+              s[strlen(s)] = '\n';
+              fflush(stdin);
+              fprintf(fv,"%s", s);   
+
+              edited=1;
+             }
+
+         else fprintf(fv,"%s", buffer);
+      }
+
+      fclose(fp);
+      fclose(fv);
+
+      if(edited==1)
+          printf("\nLivro emprestado com sucesso ! Boa leitura.");
+      else
+          printf("\nLinha não encontrada.");
+
+    free(s);
+    remove("livros.txt");
+    rename("target.txt","livros.txt");
+  }
 }
 
 int mudarDIS(char *nome_livro) {
