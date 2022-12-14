@@ -17,7 +17,7 @@ typedef struct livro {
 } tLivro;
 
 
-int checagem_livro(const tLivro livro, const tLivro *plivro, tUsuario *pUser);
+int checagem_livro(const tLivro livro, tLivro *plivro, tUsuario *pUser);
 int checagemdois(const tLivro livro, const tLivro *plivro);
 int checagem_usuario(const tUsuario login, const tUsuario *pLogin, int *autorizar);
 int colocar_usuario(tUsuario usuario, tUsuario *tusuario);
@@ -289,7 +289,7 @@ int login(const tUsuario user, const tUsuario *pUser) {
   return 0;
 }
 
-int checagem_livro(const tLivro livro, const tLivro *plivro, tUsuario *pUser) //MUDAR PARA INDISPONIVEL, PEGAR EMPRESTADO
+int checagem_livro(const tLivro livro, tLivro *plivro, tUsuario *pUser) //MUDAR PARA INDISPONIVEL, PEGAR EMPRESTADO
 {
   FILE *livrotxt;
   struct tm *data_hora_atual;
@@ -318,7 +318,7 @@ int checagem_livro(const tLivro livro, const tLivro *plivro, tUsuario *pUser) //
 
       if (col == 2) {
         linha_count = linha_count+1;
-        
+  
         if (strcmp(plivro->livros, livroprocurado) == 0) {
           fflush(stdin);
           marcador = 1;
@@ -330,11 +330,11 @@ int checagem_livro(const tLivro livro, const tLivro *plivro, tUsuario *pUser) //
 
       if (col == 4) {
         if (marcador == 1) {
-          printf("\n REL: %d\n", (strcmp(livroprocurado, "/DISPONIVEL")));
-          if (strcmp(livroprocurado, "/DISPONIVEL") >= 10)
+          if (strcmp(livroprocurado, "/DISPONIVEL\n") == 0)
           {
             printf("\nSTATUS: %s\n", livroprocurado);
-            printf("\nDeseja pegar o livro?");
+            printf("\nDeseja pegar o livro(s/n)?\n");
+            printf("---> ");
             char emprestimo;
             scanf(" %c", &emprestimo);
             marcador = 0;
@@ -379,8 +379,9 @@ int checagem_livro(const tLivro livro, const tLivro *plivro, tUsuario *pUser) //
               ano = data_hora_atual->tm_year;
               
             adiciona_date(d, m, ano, pUser, plivro);
-              
+            break;
             }
+          break;
         }
 
       else{
@@ -389,8 +390,6 @@ int checagem_livro(const tLivro livro, const tLivro *plivro, tUsuario *pUser) //
           }
 
         }
-        
-        break;
       }
 
       livroprocurado = strtok(NULL, ",");
@@ -470,7 +469,6 @@ void mudarIND(char *frase, int line) { //MUDAR PARA INDISPONIVEL, PEGAR EMPRESTA
     fp=fopen("livros.txt","r");
     fv=fopen("target.txt","w");
 
-
     size_t n = strlen(ponivel) + (strlen(mudar)) + 10;
     char *s = malloc(n);
     
@@ -483,13 +481,16 @@ void mudarIND(char *frase, int line) { //MUDAR PARA INDISPONIVEL, PEGAR EMPRESTA
         count++;
         
        if(count==line){
+
             char *disponibilidade = strtok(buffer, "/");
             
             strcpy(s, disponibilidade); 
             s[strlen(s) - 1] = '\0';
             strcat(s, mudar);
-            s[strlen(s)] = '\n';
-            fflush(stdin);
+            char *linha_nova = "\n";
+            strcat(s, linha_nova);
+            
+            printf("\ns: %s", s);
             fprintf(fv,"%s", s);   
       
             edited=1;
@@ -497,18 +498,19 @@ void mudarIND(char *frase, int line) { //MUDAR PARA INDISPONIVEL, PEGAR EMPRESTA
          
        else fprintf(fv,"%s", buffer);
     }
-      
-    fclose(fp);
-    fclose(fv);
 
     if(edited==1)
         printf("\nLivro emprestado com sucesso ! Boa leitura.");
     else
         printf("\nLinha não encontrada.");
 
+
+  printf("\nCHEGOU AQUI");
   free(s);
   remove("livros.txt");
   rename("target.txt","livros.txt");
+  fclose(fp);
+  fclose(fv);
 }
 
 void mudarDIS(char *disp, int line) {
@@ -630,7 +632,7 @@ int adiciona_date(int dia,int mes,int ano, tUsuario *pUser, tLivro *plivro)
       }
     }
   }
-  //fclose(data_w);
+
   fclose(data_r);
   fclose(temp);
   remove("leitores.txt");
@@ -747,7 +749,7 @@ int print_data(tUsuario *pUser)
           
         else if(col == 4 && aut == 1)
         {
-          if(data == NULL)
+          if(data == NULL || data == " " || data == "")
           {
             printf("\n -> Não existe data de devolução\n");
           }
