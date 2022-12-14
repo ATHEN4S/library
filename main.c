@@ -16,12 +16,17 @@ typedef struct livro {
   struct livro *next;
 } tLivro;
 
-int checagem_livro(const tLivro livro, const tLivro *plivro);
+
+int checagem_livro(const tLivro livro, const tLivro *plivro, tUsuario *pUser);
+int checagemdois(const tLivro livro, const tLivro *plivro);
 int checagem_usuario(const tUsuario login, const tUsuario *pLogin, int *autorizar);
 int colocar_usuario(tUsuario usuario, tUsuario *tusuario);
 int login(const tUsuario user, const tUsuario *pUser);
-void mudarIND(char *ind, int line);
+void mudarIND(char *frase, int line);
 void mudarDIS(char *disp, int line);
+int adiciona_date(int dia, int mes, int ano, tUsuario *pUser, tLivro *plivro);
+int remove_devol(tUsuario *pUser);
+int print_data(tUsuario *pUser);
 
 int main() {
   tUsuario Usuario, Senha;
@@ -82,40 +87,51 @@ int main() {
 
     // Se o login for feito:
     while (result == 1) {
-      int pegar_devolver;
+      char pegar_devolver;
 
       printf("\n \n Bem vindo, %s! \n", Usuario.user);
-      printf("\n\n O que deseja fazer hoje?\n 1) Pegar um livro. \n 2) Devolver "
-             "um livro. \n 3) Conferir data de devolução. \n 4) Sair \n");
+      printf("\n\n O que deseja fazer hoje?\n a) Pegar um livro. \n b) Devolver "
+             "um livro. \n c) Conferir data de devolução. \n s) Sair \n");
       printf("\n ------> ");
-      scanf(" %d", &pegar_devolver);
+      scanf(" %c", &pegar_devolver);
 
       switch (pegar_devolver) {
       
       char livroprocurado[100];
-      case 1:
+      case 'a':
 
         Book.livros = calloc(200, sizeof(char*));
         printf("\n\n Digite o título da obra:");
         printf("\n (Informe o título entre aspas)");
         printf("\n ------> ");
         scanf(" %[^\n]", Book.livros);
-        printf(" ue %s", Book.livros);
+        printf("\n --> Livro Digitado:  %s", Book.livros);
 
-        checagem_livro(Book, &Book);
+        checagem_livro(Book, &Book, &Usuario);
         break;
         
 
-      case 2:
+      case 'b':
         printf("\n DEVOLUÇÃO \n \n");
-        //mudarDIS(,);
+        
+        Book.livros = calloc(200, sizeof(char*));
+        printf("\n\n Digite o título da obra que deseja devolver:");
+        printf("\n (Informe o título entre aspas)");
+        printf("\n ------> ");
+        scanf(" %[^\n]", Book.livros);
+        printf("\n --> Livro Digitado:  %s", Book.livros);
+
+        checagemdois(Book, &Book);
+        remove_devol(&Usuario);
+       
         break;
 
-      case 3:
+      case 'c':
         printf("\n DATA DE DEVOLUÇÃO \n \n");
+        print_data(&Usuario);
         break;
 
-      case 4:
+      case 's':
         printf("\n\n Saindo! Volte sempre");
         return 0;
 
@@ -151,7 +167,7 @@ int checagem_usuario(const tUsuario login, const tUsuario *pLogin,
   check_user = fopen("login_usuario.txt", "r");
 
   if (!check_user) {
-    printf("Can't open file\n");
+    printf("Não pôde abrir o arquivo\n");
     return 1;
   }
 
@@ -159,18 +175,14 @@ int checagem_usuario(const tUsuario login, const tUsuario *pLogin,
     char buffer[100];
     int row = 0;
 
-    // Splitting the data
+    // Acessando os dados
     while (fgets(buffer, 100, check_user)) {
       row++;
 
       char *value = strtok(buffer, ", "); // Vai ser só o "user" do csv
-      printf("\nrow: %d\n", row);
 
       if (row == 1)
         continue;
-
-      printf("login: %s\n", pLogin->user);
-      printf("value: %s\n", value);
 
       if (strcmp(pLogin->user, value) == 0) {
         printf("\nO usuário já existe, tente novamente\n");
@@ -180,7 +192,7 @@ int checagem_usuario(const tUsuario login, const tUsuario *pLogin,
         *autorizar = 1;
     }
   }
-  // Close the file
+  // Fechar o arquivo
   fclose(check_user);
   return 0;
 }
@@ -195,7 +207,7 @@ int colocar_usuario(tUsuario usuario, tUsuario *tusuario) {
   status = fopen("leitores.txt", "a");
 
   if (!user_in_txt_r || !status) {
-    printf("Can't open file\n");
+    printf("Não foi possível abrir o arquivo\n");
     return 1;
   } else {
     char buffer[50];
@@ -242,7 +254,7 @@ int login(const tUsuario user, const tUsuario *pUser) {
   tLivro Livro;
 
   if (!login_txt_r) {
-    printf("Can't open file\n");
+    printf("Não pôde abrir arquivo\n");
     return -1;
   } else {
     char buffer[100];
@@ -274,27 +286,28 @@ int login(const tUsuario user, const tUsuario *pUser) {
       }
     }
   }
+  return 0;
 }
 
-int checagem_livro(const tLivro livro, const tLivro *plivro) {
-  FILE *livro_a;
-  livro_a = fopen("livros.txt", "r");
-
+int checagem_livro(const tLivro livro, const tLivro *plivro, tUsuario *pUser) //MUDAR PARA INDISPONIVEL, PEGAR EMPRESTADO
+{
+  FILE *livrotxt;
+  struct tm *data_hora_atual;
+  livrotxt = fopen("livros.txt", "r");
+  tLivro Book;
   char buffer[1000];
   int row = 1, col = 0;
   int marcador = 0;
   int linha_count = 0;
   
-  while (fgets(buffer, (sizeof(buffer)), livro_a)) {
+  while (fgets(buffer, (sizeof(buffer)), livrotxt)) {
     col = 0;
     row++;
     char frase[1000];
 
     strcpy(frase, buffer);
-    printf("\n%s 1111", frase);
     
     char *livroprocurado = strtok(buffer, ",");
-    printf("\n%s", livroprocurado);
     if (row == 1) {
       livroprocurado == NULL;
       continue;
@@ -307,7 +320,6 @@ int checagem_livro(const tLivro livro, const tLivro *plivro) {
         linha_count = linha_count+1;
         
         if (strcmp(plivro->livros, livroprocurado) == 0) {
-          printf("\n TITULO: %s", plivro->livros);
           fflush(stdin);
           marcador = 1;
         }
@@ -317,45 +329,59 @@ int checagem_livro(const tLivro livro, const tLivro *plivro) {
       }
 
       if (col == 4) {
-        printf("\n");
         if (marcador == 1) {
-          printf("\n STATUS: %s\n", livroprocurado);
-          printf("DIF: %d", strcmp(livroprocurado, "/DISPONIVEL"));
-          if (strcmp(livroprocurado, "/DISPONIVEL") == 10){
+          printf("\n REL: %d\n", (strcmp(livroprocurado, "/DISPONIVEL")));
+          if (strcmp(livroprocurado, "/DISPONIVEL") >= 10)
+          {
             printf("\nSTATUS: %s\n", livroprocurado);
             printf("\nDeseja pegar o livro?");
             char emprestimo;
             scanf(" %c", &emprestimo);
             marcador = 0;
   
-            if (emprestimo == 's') {
-            printf("\n LINHAS: %d",linha_count) ;
-            printf("\n FRASE: %s",frase) ;
-            mudarIND(frase, linha_count);
-  
-           struct tm *data_hora_atual;
-  
-           time_t segundos;
-      
-          time(&segundos);   
+            if (emprestimo == 's')
+            {
+              printf("\n FRASE: %s",frase);
+              mudarIND(frase, linha_count);
     
-          data_hora_atual = localtime(&segundos);  
-   
-          printf("\nData de emprestimo:  %d/", data_hora_atual->tm_mday);
-          printf("%d/",data_hora_atual->tm_mon+1); //mês
-          printf("%d\n\n",data_hora_atual->tm_year+1900); //ano
-  
-          printf("\nData de devolução:  %d/", data_hora_atual->tm_mday);
-          if((data_hora_atual->tm_mon+1)==12) {   
-          printf("%d/",data_hora_atual->tm_mon-10);
-          printf("%d\n\n",data_hora_atual->tm_year+1901);
-            }else{
-                printf("%d/",data_hora_atual->tm_mon+2);
-                printf("%d\n\n",data_hora_atual->tm_year+1900);
-              }
+    
+              time_t segundos;
           
+              time(&segundos);   
+        
+              data_hora_atual = localtime(&segundos);  
+    
+              
+              printf("\nData de emprestimo:  %d/", data_hora_atual->tm_mday);
+              printf("%d/",data_hora_atual->tm_mon+1); //mês
+              printf("%d\n\n",data_hora_atual->tm_year+1900); //ano
+              
+              printf("\nData de devolução:  %d/", data_hora_atual->tm_mday);
+              
+              if((data_hora_atual->tm_mon+1)==12)
+              {
+                data_hora_atual->tm_mon = data_hora_atual->tm_mon-10;
+                printf("%d/",data_hora_atual->tm_mon);
+                data_hora_atual->tm_year = data_hora_atual->tm_year+1901;
+                printf("%d\n\n",data_hora_atual->tm_year);
+              }
+              else
+              {
+                data_hora_atual->tm_mon = data_hora_atual->tm_mon+2;
+                printf("%d/",data_hora_atual->tm_mon);
+                data_hora_atual->tm_year = data_hora_atual->tm_year+1900;
+                printf("%d\n\n",data_hora_atual->tm_year);
+              }
+
+              int d, m, ano;
+              d = data_hora_atual->tm_mday;
+              m = data_hora_atual->tm_mon;
+              ano = data_hora_atual->tm_year;
+              
+            adiciona_date(d, m, ano, pUser, plivro);
+              
             }
-            }
+        }
 
       else{
         printf("Esse livro já foi emprestado. Escolha outro, ou tente novamente mais tarde.");
@@ -364,14 +390,12 @@ int checagem_livro(const tLivro livro, const tLivro *plivro) {
 
         }
         
-        printf("\n MARCADOR: %d ", marcador);
-        printf("\n ROW: %d ", row);
         break;
       }
 
       livroprocurado = strtok(NULL, ",");
     }
-    }
+  }
     
     if (marcador == (row-1)*2){
       printf("\n \n Não achamos esse livro. Atente-se às aspas e ao case das palavras! Verifique o título e tente novamente.");
@@ -379,28 +403,77 @@ int checagem_livro(const tLivro livro, const tLivro *plivro) {
   return 0;
 }
 
-void mudarIND(char *ind, int line) {
+int checagemdois(const tLivro livro, const tLivro *plivro) {
+  FILE *livro_a;
+  livro_a = fopen("livros.txt", "r");
+
+  char buffer[1000];
+  int row = 1, col = 0;
+  int marca = 0;
+  int linha_count = 0;
+  
+  while (fgets(buffer, (sizeof(buffer)), livro_a)) {
+    col = 0;
+    row++;
+    char frase[1000];
+
+    strcpy(frase, buffer);
+    
+    char *livroprocurado = strtok(buffer, ",");
+    if (row == 1) {
+      livroprocurado == NULL;
+      continue;
+    }
+
+    while (livroprocurado != NULL)
+    {
+      col++;
+      if (col == 2)
+      {
+        linha_count = linha_count+1;
+        
+        if (strcmp(plivro->livros, livroprocurado) == 0)
+        {
+          marca = 1;
+          fflush(stdin);
+        }
+        else
+          marca = marca + 2;
+      }
+      
+
+      if (col == 4)
+      {
+        if (marca == 1)
+        {
+          mudarDIS(frase, linha_count);
+        }
+      }
+      
+      livroprocurado = strtok(NULL, ",");
+    }
+  }
+   
+  return 0;
+}//MUDAR PARA DISPONIVEL, DEVOLVER
+      
+void mudarIND(char *frase, int line) { //MUDAR PARA INDISPONIVEL, PEGAR EMPRESTADO
   
     FILE *fp;
     FILE *fv;
-    int count=0;  //count number lines in source file.
-    int ch;   //temporary place to store character of source file(one at a time).
-    int edited=0;  //0=false and 1=true
-    char *t = ",/INDISPONIVEL";   //temporary place to store input which you want to be replaced with error in text file.
-    char *ponivel = ind;
+    int count=0;  //Contar o numero das linhas no txt
+    int edited=0;  //como bool, 0=Falso, 1=Verdadeiro
+    char *mudar = ",/INDISPONIVEL";   //String que queremos adicionar no final do livro selecionado.
+    char *ponivel = frase; // Ponteiro para a frase passada.
     char buffer[1000];
     
-    printf("AAAAAAA %s", ponivel);
-    //printf("BBBBBBB %s", *&disponi);
     fp=fopen("livros.txt","r");
     fv=fopen("target.txt","w");
 
 
-    size_t n = strlen(ponivel) + (strlen(t)) + 10;
+    size_t n = strlen(ponivel) + (strlen(mudar)) + 10;
     char *s = malloc(n);
     
-
-    printf("PONIVEL: %s", s);
   
     if(fp==NULL||fv==NULL){
         printf("\nErro... Não foi possível abrir os arquivos");
@@ -408,21 +481,20 @@ void mudarIND(char *ind, int line) {
 
     while (fgets(buffer, sizeof(buffer), fp)) {
         count++;
-        printf("COUNT: %d", count);
         
        if(count==line){
             char *disponibilidade = strtok(buffer, "/");
-            printf("PONIVEL_NEW: %s", disponibilidade);
+            
             strcpy(s, disponibilidade); 
             s[strlen(s) - 1] = '\0';
-            strcat(s, t);
+            strcat(s, mudar);
             s[strlen(s)] = '\n';
             fflush(stdin);
             fprintf(fv,"%s", s);   
       
-            printf("\n BBBB %s", disponibilidade);
             edited=1;
            }
+         
        else fprintf(fv,"%s", buffer);
     }
       
@@ -430,7 +502,7 @@ void mudarIND(char *ind, int line) {
     fclose(fv);
 
     if(edited==1)
-        printf("\nCongrates...Error Edited Successfully.");
+        printf("\nLivro emprestado com sucesso ! Boa leitura.");
     else
         printf("\nLinha não encontrada.");
 
@@ -444,9 +516,8 @@ void mudarDIS(char *disp, int line) {
     FILE *fp;
     FILE *fv;
     int count=0;  //count number lines in source file.
-    int ch;   //temporary place to store character of source file(one at a time).
     int edited=0;  //0=false and 1=true
-    char *t = ",/DISPONIVEL";   //temporary place to store input which you want to be replaced with error in text file.
+    char *devolver = ",/DISPONIVEL";   //temporary place to store input which you want to be replaced with error in text file.
     char *ponivel = disp;
     char buffer[1000];
     
@@ -454,7 +525,7 @@ void mudarDIS(char *disp, int line) {
     fv=fopen("target.txt","w");
 
 
-    size_t n = strlen(ponivel) + (strlen(t)) + 10;
+    size_t n = strlen(ponivel) + (strlen(devolver)) + 10;
     char *s = malloc(n);
     
   
@@ -467,12 +538,11 @@ void mudarDIS(char *disp, int line) {
         
        if(count==line){
             char *disponibilidade = strtok(buffer, "/");
+            printf("\nDISPONI: %s", disponibilidade);
             strcpy(s, disponibilidade); 
             s[strlen(s) - 1] = '\0';
-            strcat(s, t);
-            s[strlen(s)] = '\n';
-            fflush(stdin);
-            fprintf(fv,"%s", s); 
+            strcat(s, devolver);
+            fprintf(fv,"%s \n", s); 
          
             edited=1;
            }
@@ -483,11 +553,216 @@ void mudarDIS(char *disp, int line) {
     fclose(fv);
 
     if(edited==1)
-        printf("\n Livro devolvido com sucesso!");
+        printf("\n\n Livro devolvido com sucesso!");
     else
         printf("\nLinha não encontrada.");
 
   free(s);
   remove("livros.txt");
   rename("target.txt","livros.txt");
+}
+
+int adiciona_date(int dia,int mes,int ano, tUsuario *pUser, tLivro *plivro)
+{
+  FILE *data_r;
+  FILE *temp;
+  
+  int aut = 0;
+  char buffer[1000];
+  int col = 0;
+  char data_imprimir[100];
+
+  snprintf(data_imprimir, 100, "%d/%d/%d", dia,mes,ano);
+  char *pd = data_imprimir;
+
+  data_r = fopen("leitores.txt","r");
+  temp = fopen("temp_colocar_data.txt","w");
+  
+  if(!data_r || !temp)
+  {
+    printf("\nNão foi possível abrir o arquivo");
+    return 1;
+  }
+  else
+  {
+    while (fgets(buffer, sizeof(buffer), data_r))
+    {
+      col = 0;
+      char *data = strtok(buffer, ",");
+      char *comma = ",";
+      char *status = " indisponível";
+      
+      while(data != NULL)
+      {
+        col++;
+        if (col == 1 && strcmp(pUser->user, data) == 0)
+        {
+          fprintf(temp,"%s",data);
+          fprintf(temp,comma);
+          aut = 1;
+        }
+
+        else if (col == 2 && aut == 1)
+        {
+          fprintf(temp,"%s",status);
+          fprintf(temp,comma);
+        }
+
+        else if (col == 3 && aut == 1)
+        {
+          fprintf(temp," %s",plivro->livros);
+          fprintf(temp,comma);
+        }
+          
+        else if(col == 4 && aut == 1)
+        {
+          data = data_imprimir;
+          fprintf(temp,"%s",data_imprimir);
+          fprintf(temp,comma);
+          aut = 0;
+        }
+        else
+        {
+          fprintf(temp,"%s",data);
+          fprintf(temp,comma);
+        }
+        data = strtok(NULL, ",");
+      }
+    }
+  }
+  //fclose(data_w);
+  fclose(data_r);
+  fclose(temp);
+  remove("leitores.txt");
+  rename("temp_colocar_data.txt","leitores.txt");
+  return 0;
+}
+
+int remove_devol(tUsuario *pUser)
+{
+  FILE *data_r;
+  FILE *temp;
+  
+  int aut = 0;
+  char buffer[1000];
+  int col = 0;
+  char *status = " disponível";
+
+
+  data_r = fopen("leitores.txt","r");
+  temp = fopen("temp_tirar_data.txt","w");
+  
+  if(!data_r || !temp)
+  {
+    printf("\nNão foi possível abrir o arquivo");
+    return 1;
+  }
+  else
+  {
+    while (fgets(buffer, sizeof(buffer), data_r))
+    {
+
+      col=0;
+      char *data = strtok(buffer, ",");
+      char *comma = ",";
+      
+      while(data != NULL)
+      {
+        col++;
+        if (col == 1 && strcmp(pUser->user, data) == 0)
+        {
+          fprintf(temp,"%s",data);
+          fprintf(temp,comma);
+          aut = 1;
+        }
+
+
+        else if (col == 2 && aut == 1)
+        {
+          fprintf(temp,"%s",status);
+          fprintf(temp,comma);
+          aut = 1;
+        }
+        else if (col == 3 && aut == 1)
+        {
+          fprintf(temp," ");
+          fprintf(temp,comma);
+        }
+        else if(col == 4 && aut == 1)
+        {
+          fprintf(temp," ");
+          fprintf(temp,comma);
+          aut = 0;
+          
+        }
+        else
+        {
+          fprintf(temp,"%s",data);
+          fprintf(temp,comma);
+        }
+        data = strtok(NULL, ",");
+      }
+    }
+  }
+  fclose(data_r);
+  fclose(temp);
+  remove("leitores.txt");
+  rename("temp_tirar_data.txt","leitores.txt");
+  return 0;
+}
+
+
+int print_data(tUsuario *pUser)
+{
+  FILE *data_r;
+  
+  int aut = 0;
+  char buffer[1000];
+  int col = 0;
+
+  data_r = fopen("leitores.txt","r");
+  
+  if(!data_r)
+  {
+    printf("\nNão foi possível abrir o arquivo");
+    return 1;
+  }
+  else
+  {
+    while (fgets(buffer, sizeof(buffer), data_r))
+    {
+
+      col=0;
+      char *data = strtok(buffer, ",");
+      char *comma = ",";
+      
+      while(data != NULL)
+      {
+        col++;
+        if (col == 1 && strcmp(pUser->user, data) == 0)
+        {
+          aut = 1;
+          printf("\nData: %s\n", data);
+        }
+          
+        else if(col == 4 && aut == 1)
+        {
+          if(data == NULL)
+          {
+            printf("\n -> Não existe data de devolução\n");
+          }
+
+          else
+          {
+            printf("\nData de Devolução: %s\n", data);
+          }
+          aut = 0;
+          
+        }
+        data = strtok(NULL, ",");
+      }
+    }
+  }
+  fclose(data_r);
+  return 0;
 }
