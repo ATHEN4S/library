@@ -544,6 +544,8 @@ void mudarDIS(char *disp, int line) {
             strcpy(s, disponibilidade); 
             s[strlen(s) - 1] = '\0';
             strcat(s, devolver);
+            char *linha_nova = "\n";
+            strcat(s, linha_nova);
             fprintf(fv,"%s \n", s); 
          
             edited=1;
