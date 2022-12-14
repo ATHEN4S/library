@@ -1,4 +1,6 @@
-user, status usuario, livros, devolver, lista de desejos
-malu, disponível, , , 
-ana, disponível, , , 
-frann, disponível, , , 
+user, status usuario, livros, data_devolução, algo
+,malu, disponível, , , 
+,anna, disponível, , , 
+,frann, disponível, , , 
+,ana1, disponivel, , , 
+,a, disponivel, , , ,
