@@ -124,7 +124,6 @@ int main() {
           
         Book.livros = calloc(1000, sizeof(char*));
         printf("\n\n Digite o título da obra:");
-        printf("\n (Informe o título entre aspas)");
         printf("\n ------> ");
         scanf(" %[^\n]", Book.livros);
         printf("\n Procurando em nossos arquivos:  %s", Book.livros);
@@ -476,7 +475,7 @@ int checagem_livro(tLivro livro, tLivro *plivro, tUsuario *pUser)
   }
     
     if (marcador == (row-1)*2){
-      printf("\n \n Não achamos esse livro. Atente-se às aspas e ao case das palavras! Verifique o título e tente novamente.");
+      printf("\n \n Não achamos esse livro. Verifique o título e tente novamente.");
       
   }
   return 0;
