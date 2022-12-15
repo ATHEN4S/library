@@ -648,6 +648,11 @@ int mudarDIS(char *nome_livro) {
     char *livroprocurado = strtok(buffer1, ",");
 
     while (livroprocurado != NULL) {
+
+      for(int i = 0;livroprocurado[i]; i++)
+        {
+          livroprocurado[i] = tolower(livroprocurado[i]);
+        }
       if (strcmp(nome_livro, livroprocurado) == 0) {
           fecha = 1;
           break;
@@ -658,7 +663,7 @@ int mudarDIS(char *nome_livro) {
     if (fecha == 1){
       break;
     }
-    }
+  }
   
 
     while (fgets(buffer, sizeof(buffer), fp)) {
@@ -667,14 +672,11 @@ int mudarDIS(char *nome_livro) {
         char *linhacmp = buffer;
         char *disp = strtok(buffer, "/");
         disp = strtok(NULL, "/");
-    
-      
        if(count == col){
-            printf("\nDISPONI: %s", disp);
+            
             strcpy(s, linhacmp); 
             s[strlen(s) - 1] = '\0';
             strcat(s, devolver);
-            printf("\nFINAL: %s", s);
             fprintf(fv,"%s \n", s); 
          
             edited=1;
